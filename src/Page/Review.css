@@ -1,0 +1,35 @@
+.Review-Container{
+    width: 100%;
+    height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Review-Border{
+    width: 80%;
+    height: 80%;
+    background-color: whitesmoke;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.Review-ChoiceBox{
+    width: 80%;
+    height: 80%;
+    margin-bottom: 2%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5% 2.5%;
+}
+
+
+.Review-a, .Review-b, .Review-c, .Review-d{
+    border-radius: 10px;
+    background-color: salmon;
+    cursor: pointer;
+}
+
