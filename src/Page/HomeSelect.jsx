@@ -26,7 +26,7 @@ const HomeSelect = () => {
       content = <Favorite />;
       break;
     default:
-      content = <Course />;
+      content = <Favorite />;
       break;
   }
 
