@@ -1,107 +1,170 @@
-.Home-Container{
-    width: 100vw;
-    /* background-color: salmon; */
+.Home-Container {
+  width: 100vw;
+  /* background-color: salmon; */
 }
 
-.Home-NotFind{
-    width: 100%;
-    height: 60vh;
-    /* background-color: seagreen; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+.Home-NotFind {
+  width: 100%;
+  height: 60vh;
+  /* background-color: seagreen; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.Home-SelectBorder{
-    width: 70%;
-    height: 80%;
-    background-color: rgba(204, 204, 204, 0.521);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    border-radius: 20px;
+.Home-SelectBorder {
+  width: 70%;
+  height: 80%;
+  background-color: rgba(204, 204, 204, 0.521);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-radius: 20px;
+  margin-top: 3%;
+  overflow: hidden;
 }
 
-.Home-DashBorder{
-    width: 100%;
-    height: 100%;
-    /* background-color: aqua; */
-    border-style: dashed;
-    display: flex;
-    align-items: center;
-
+.Home-DashBorder {
+  width: 100%;
+  height: 100%;
+  border: 0.2vw solid;
+  /* background-color: aqua; */
+  border-style: dashed;
+  display: flex;
+  align-items: center;
 }
 
-.Home-year{
-    width: 50%;
-    height: 100%;
-    /* background-color: black; */
+.Home-year {
+  width: 50%;
+  height: 100%;
+  /* background-color: black; */
+  overflow: hidden;
 }
 
-.Home-Line{
-    width: 1px;
-    height: 80%;
-    background-color: black;
+.Home-Line {
+  width: 1px;
+  height: 80%;
+  background-color: black;
 }
 
-.Home-Semester{
-    width: 50%;
-    height: 100%;
-    /* background-color: salmon; */
+.Home-Semester {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  /* background-color: salmon; */
 }
 
 .Home-Checkbox {
-    /* margin-top: -3vh; */
-    margin-left: 5vw;
-    /* background-color: seagreen; */
-    height: 80%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px; /* Optional: Adds space between each checkbox */
+  /* margin-top: -3vh; */
+  margin-left: 5vw;
+  /* background-color: seagreen; */
+  height: 80%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-.Home-CheckBox2 label, .Home-Checkbox label {
-    display: flex;
-    align-items: center; /* Vertically centers the checkbox and number */
-    font-size: 18px; /* Adjust font size if needed */
-    gap: 5px; /* Adds space between checkbox and label text */
+.Home-CheckBox2 label,
+.Home-Checkbox label {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  gap: 5px;
 }
 
 input[type="checkbox"] {
-    width: 30px;
-    height: 30px;
+  width: 30px;
+  height: 30px;
 }
 
-.Home-CheckBox2{
-    /* background-color: saddlebrown; */
-    height: 80%;
-    width: 20px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    
+.Home-CheckBox2 {
+  /* background-color: saddlebrown; */
+  height: 80%;
+  width: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
-.Home-Label{
-    /* background-color: saddlebrown; */
-    margin-left: 5%;
-    margin-top: 3%;
+.Home-Label {
+  gap: 0.5vw;
+  margin-left: 5%;
+  margin-top: 3%;
+  display: flex;
+  width: 48%;
+  align-items: center;
+}
+
+.Star {
+  color: rgb(255, 228, 72);
+}
+
+.Home-Button {
+  background-color: #ffce92;
+
+  margin-top: 3%;
+  width: 10%;
+  height: 10%;
+  cursor: pointer;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 1s;
+}
+
+.Home-Button:hover {
+  background-color: rgb(233, 151, 0);
+}
+
+.Home-table {
+  margin-bottom: 5vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Home-margin {
+  margin-bottom: 2vh;
+  color: rgb(163, 163, 163);
+  width: 100%;
+}
+
+.Home-TypeTable {
+  margin-top: 3vh;
+  width: 80%;
+  justify-items: center;
 }
 
 table {
-  width: 100%;
+  width: 80%;
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
+  width: 20px;
 }
 
 th {
   background-color: #f2f2f2;
+}
+
+.Home-arrow {
+  margin-top: 1%;
+  /* background-color: saddlebrown; */
+  width: 95%;
+  display: flex;
+  color: rgb(167, 167, 167);
+}
+
+.arrow {
+  cursor: pointer;
 }

@@ -1,37 +1,111 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+import mysql.connector
+from mysql.connector import Error
 
 app = Flask(__name__)
+CORS(app)
 
-# Sample data to work with (simulates a database)
-items = [
-    {"id": 1, "name": "Item 1", "description": "This is the first item"},
-    {"id": 2, "name": "Item 2", "description": "This is the second item"}
-]
+users_data = []
+study_plans_data = []
+fav_data = []
 
-# Home route
+try:
+    db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
+    if db.is_connected():
+        print("Database connection successful!")
+except Error as e:
+    print(f"Error connecting to the database: {e}")
+
+
+def fetch_users():
+    global users_data
+    try:
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT username, password FROM User")
+        users_data = cursor.fetchall()
+        cursor.close()
+        print(f"Fetched users: {users_data}")
+    except Error as e:
+        print(f"Error while fetching users: {e}")
+
+
+def fetch_study_plans():
+    global study_plans_data
+    try:
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT sp.id, sp.year, sp.semester, c.no, c.name, c.credit, c.prof, c.type_id
+            FROM StudyPlan sp
+            JOIN Course c ON sp.course_no = c.no
+        """)
+        study_plans_data = cursor.fetchall()
+        cursor.close()
+        print(f"Fetched study plans: {study_plans_data}")
+    except Error as e:
+        print(f"Error while fetching study plans: {e}")
+
+
+def fetch_favorites():
+    global fav_data
+    try:
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT f.course_no, c.no, c.name, c.credit, c.prof, c.type_id
+            FROM Favorites f
+            JOIN Course c ON f.course_no = c.no
+        """)
+        fav_data = cursor.fetchall()
+        cursor.close()
+        print(f"\n\nFetched favorite courses: {fav_data}")
+    except Error as e:
+        print(f"Error while fetching favorite courses: {e}")
 
 
 @app.route('/')
 def home():
     return "Welcome to the Flask API!"
 
-# Get all items
+
+@app.route('/users', methods=['POST'])
+def find_user():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    try:
+        user = next(
+            (user for user in users_data if user['username'] == username and user['password'] == password), None)
+
+        if user:
+            return jsonify({"message": "User found", "user": user}), 200
+        else:
+            return jsonify({"message": "User not found"}), 404
+    except Exception as e:
+        print(f"Error while processing user data: {e}")
+        return jsonify({"message": "Internal Server Error"}), 500
 
 
-@app.route('/items', methods=['GET'])
-def get_items():
-    return jsonify(items)
+@app.route('/studyplan', methods=['GET'])
+def get_study_plan():
+    if study_plans_data:
+        return jsonify(study_plans_data), 200
+    else:
+        return jsonify({"message": "No study plans found."}), 404
 
-# Get a specific item by ID
 
-
-@app.route('/items/<int:item_id>', methods=['GET'])
-def get_item(item_id):
-    item = next((item for item in items if item["id"] == item_id), None)
-    if item:
-        return jsonify(item)
-    return jsonify({"error": "Item not found"}), 404
+@app.route('/fav', methods=['GET'])
+def get_fav():
+    return fav_data
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    fetch_users()
+    fetch_study_plans()
+    fetch_favorites()
+    app.run()

@@ -1,10 +1,22 @@
 import React, { useContext, useState } from "react";
 import { ChooseContext } from "../Context/ChooseContext";
 import "./Catagories.css";
+import { RxHamburgerMenu } from "react-icons/rx";
+import Home from "../asset/Home.webp";
+import review from "../asset/review.jpg";
+import Fav from "../asset/Fav.jpg";
+import Book from "../asset/Books.jpg";
 
 const Catagories = () => {
   const { choose, setChoose } = useContext(ChooseContext);
   const [isClicked, setClicked] = useState(false);
+
+  const symbol = [
+    { name: "Home", img: Home },
+    { name: "Review", img: review },
+    { name: "Courses", img: Book },
+    { name: "Favorite", img: Fav },
+  ];
 
   const ChangeChoice = (choice) => {
     setChoose(choice);
@@ -16,24 +28,21 @@ const Catagories = () => {
       <div className="Cata-Select">
         {isClicked ? (
           <div className="Cata-Choice">
-            <div className="Cata-Home" onClick={() => ChangeChoice("Home")}>
-              Home
-            </div>
-            <div className="Cata-Review" onClick={() => ChangeChoice("Review")}>
-              Review
-            </div>
-            <div
-              className="Cata-Courses"
-              onClick={() => ChangeChoice("Courses")}
-            >
-              Courses
-            </div>
-            <div
-              className="Cata-Favorite"
-              onClick={() => ChangeChoice("Favorite")}
-            >
-              Favorite
-            </div>
+            {symbol.map((item) => (
+              <div
+                key={item.name}
+                className={`Cata-${item.name}`}
+                style={{
+                  backgroundImage: `url(${item.img})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  color: "white",
+                }}
+                onClick={() => ChangeChoice(item.name)}
+              >
+                <div className="Cata-Name">{item.name}</div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="Cata-Unclick">
@@ -43,7 +52,7 @@ const Catagories = () => {
                 setClicked(!isClicked);
               }}
             >
-              asdasd
+              <RxHamburgerMenu />
             </div>
             <h1>{choose}</h1>
           </div>

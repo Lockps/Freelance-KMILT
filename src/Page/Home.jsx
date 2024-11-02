@@ -1,117 +1,177 @@
 import React, { useState } from "react";
 import "./Home.css";
+import { BiArrowBack } from "react-icons/bi";
+import { FaStar } from "react-icons/fa";
 
 const Home = () => {
   const [isFind, setFind] = useState(false);
-  const [isLoad, setLoad] = useState(true);
+  const [isLoad, setLoad] = useState(false);
+  const [selectedYears, setSelectedYears] = useState([]);
+  const [selectedSemesters, setSelectedSemesters] = useState([]);
+  const [returnedData, setReturnedData] = useState([]);
 
-  const handleCheckboxChange = (num) => {
-    console.log(num);
+  const handleCheckboxChangeYear = (num) => {
+    setSelectedYears((prev) => {
+      if (prev.includes(num)) {
+        return prev.filter((year) => year !== num);
+      } else {
+        return [...prev, num];
+      }
+    });
   };
 
-  const handleClick = () => {
+  const handleCheckboxChangeSemester = (num) => {
+    setSelectedSemesters((prev) => {
+      if (prev.includes(num)) {
+        return prev.filter((sem) => sem !== num);
+      } else {
+        return [...prev, num];
+      }
+    });
+  };
+
+  const handleClick = async () => {
+    console.log("Selected Years:", selectedYears);
+    console.log("Selected Semesters:", selectedSemesters);
+
     setFind(true);
+    setLoad(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/studyplan", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("Returned Data:", data);
+      setReturnedData(data);
+    } catch (error) {
+      console.error("Error fetching study plan:", error);
+    } finally {
+      setLoad(false);
+    }
   };
 
-  const data = [
-    { id: 1, name: "John Doe", age: 28, occupation: "Engineer" },
-    { id: 2, name: "Jane Smith", age: 34, occupation: "Designer" },
-    { id: 3, name: "Mike Johnson", age: 45, occupation: "Manager" },
-  ];
+  const courseTypeMap = {
+    1: "Gened",
+    2: "เสรี",
+    3: "บังคับเลือก",
+    4: "เลือก",
+  };
+
+  const groupedCourses = returnedData.reduce((acc, course) => {
+    const type = course.type_id;
+    const typeName = courseTypeMap[type] || "Unknown";
+
+    if (!acc[typeName]) {
+      acc[typeName] = [];
+    }
+    acc[typeName].push(course);
+    return acc;
+  }, {});
 
   return (
     <div className="Home-Container">
       {isFind ? (
         isLoad ? (
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Occupation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>{item.name}</td>
-                  <td>{item.age}</td>
-                  <td>{item.occupation}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <h1>Loading...</h1>
         ) : (
-          <h1>Loading</h1>
+          <div className="Home-table">
+            <div className="Home-arrow">
+              <BiArrowBack
+                className="arrow"
+                onClick={() => {
+                  setFind(false);
+                  setLoad(false);
+                  setSelectedYears([]);
+                  setSelectedSemesters([]);
+                }}
+              />
+            </div>
+            {Object.keys(groupedCourses).map((type) => (
+              <div key={type} className="Home-TypeTable">
+                <h4 className="Home-margin">{type}</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Credit</th>
+                      <th>Professor</th>
+                      <th>Year</th>
+                      <th>Semester</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {groupedCourses[type]
+                      .filter(
+                        (item) =>
+                          selectedYears.includes(item.year) &&
+                          selectedSemesters.includes(item.semester)
+                      )
+                      .map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
+                          <td>{item.name}</td>
+                          <td>{item.credit}</td>
+                          <td>{item.prof}</td>
+                          <td>{item.year}</td>
+                          <td>{item.semester}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
         )
       ) : (
         <div className="Home-NotFind">
           <div className="Home-SelectBorder">
             <div className="Home-DashBorder">
               <div className="Home-year">
-                <h1 className="Home-Label">ปีการศึกษา</h1>
+                <h1 className="Home-Label">
+                  <FaStar className="Star" /> ปีการศึกษา
+                </h1>
                 <div className="Home-Checkbox">
-                  <label>
-                    <input
-                      type="checkbox"
-                      onChange={() => handleCheckboxChange(1)}
-                    />
-                    ปี 1
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      onChange={() => handleCheckboxChange(2)}
-                    />
-                    ปี 2
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      onChange={() => handleCheckboxChange(3)}
-                    />
-                    ปี 3
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      onChange={() => handleCheckboxChange(4)}
-                    />
-                    ปี 4
-                  </label>
+                  {[1, 2, 3, 4].map((year) => (
+                    <label key={year}>
+                      <input
+                        type="checkbox"
+                        onChange={() => handleCheckboxChangeYear(year)}
+                      />
+                      ปี {year}
+                    </label>
+                  ))}
                 </div>
               </div>
               <div className="Home-Line"></div>
               <div className="Home-Semester">
-                <h1 className="Home-Label">ภาคการศึกษา</h1>
+                <h1 className="Home-Label">
+                  <FaStar className="Star" />
+                  ภาคการศึกษา
+                </h1>
                 <div className="Home-CheckBox2">
-                  <label>
-                    <input
-                      type="checkbox"
-                      onChange={() => handleCheckboxChange(1)}
-                    />
-                    ภาค 1
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      onChange={() => handleCheckboxChange(2)}
-                    />
-                    ภาค 2
-                  </label>
+                  {[1, 2].map((sem) => (
+                    <label key={sem}>
+                      <input
+                        type="checkbox"
+                        onChange={() => handleCheckboxChangeSemester(sem)}
+                      />
+                      ภาค {sem}
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-          <button
-            onClick={() => {
-              handleClick();
-            }}
-          >
-            asdasd
-          </button>
+          <div className="Home-Button" onClick={handleClick} disabled={isLoad}>
+            FIND
+          </div>
         </div>
       )}
     </div>
