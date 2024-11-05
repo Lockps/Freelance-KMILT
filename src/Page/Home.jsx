@@ -6,33 +6,21 @@ import { FaStar } from "react-icons/fa";
 const Home = () => {
   const [isFind, setFind] = useState(false);
   const [isLoad, setLoad] = useState(false);
-  const [selectedYears, setSelectedYears] = useState([]);
-  const [selectedSemesters, setSelectedSemesters] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedSemester, setSelectedSemester] = useState(null);
   const [returnedData, setReturnedData] = useState([]);
 
-  const handleCheckboxChangeYear = (num) => {
-    setSelectedYears((prev) => {
-      if (prev.includes(num)) {
-        return prev.filter((year) => year !== num);
-      } else {
-        return [...prev, num];
-      }
-    });
+  const handleRadioChangeYear = (year) => {
+    setSelectedYear(year);
   };
 
-  const handleCheckboxChangeSemester = (num) => {
-    setSelectedSemesters((prev) => {
-      if (prev.includes(num)) {
-        return prev.filter((sem) => sem !== num);
-      } else {
-        return [...prev, num];
-      }
-    });
+  const handleRadioChangeSemester = (semester) => {
+    setSelectedSemester(semester);
   };
 
   const handleClick = async () => {
-    console.log("Selected Years:", selectedYears);
-    console.log("Selected Semesters:", selectedSemesters);
+    console.log("Selected Year:", selectedYear);
+    console.log("Selected Semester:", selectedSemester);
 
     setFind(true);
     setLoad(true);
@@ -87,8 +75,8 @@ const Home = () => {
                 onClick={() => {
                   setFind(false);
                   setLoad(false);
-                  setSelectedYears([]);
-                  setSelectedSemesters([]);
+                  setSelectedYear(null);
+                  setSelectedSemester(null);
                 }}
               />
             </div>
@@ -110,8 +98,8 @@ const Home = () => {
                     {groupedCourses[type]
                       .filter(
                         (item) =>
-                          selectedYears.includes(item.year) &&
-                          selectedSemesters.includes(item.semester)
+                          item.year === selectedYear &&
+                          item.semester === selectedSemester
                       )
                       .map((item) => (
                         <tr key={item.id}>
@@ -141,8 +129,9 @@ const Home = () => {
                   {[1, 2, 3, 4].map((year) => (
                     <label key={year}>
                       <input
-                        type="checkbox"
-                        onChange={() => handleCheckboxChangeYear(year)}
+                        type="radio"
+                        checked={selectedYear === year}
+                        onChange={() => handleRadioChangeYear(year)}
                       />
                       ปี {year}
                     </label>
@@ -159,8 +148,9 @@ const Home = () => {
                   {[1, 2].map((sem) => (
                     <label key={sem}>
                       <input
-                        type="checkbox"
-                        onChange={() => handleCheckboxChangeSemester(sem)}
+                        type="radio"
+                        checked={selectedSemester === sem}
+                        onChange={() => handleRadioChangeSemester(sem)}
                       />
                       ภาค {sem}
                     </label>

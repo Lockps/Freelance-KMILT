@@ -4,7 +4,8 @@ import { BiArrowBack } from "react-icons/bi";
 import a from "../asset/a.jpg";
 import b from "../asset/b.png";
 import c from "../asset/c.jpg";
-import d from "../asset/d.jpg"; // Fixed incorrect file extension
+import d from "../asset/d.jpg";
+import Star from "../Components/Star";
 
 const Review = () => {
   const [isClick, setClick] = useState(false);
@@ -13,10 +14,63 @@ const Review = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [rating, setRating] = useState(null);
+
+  const [contentFeedback, setContentFeedback] = useState("");
+  const [professorFeedback, setProfessorFeedback] = useState("");
+  const [examFeedback, setExamFeedback] = useState("");
+
+  const [file, setfile] = useState(null)
+
+  const handleFileChange = (e) =>{
+    console.log("asdasdsad");
+    
+    setfile(e.target.files[0])
+    console.log(file);
+    
+  }
+
+  const handleSubmit = async () => {
+    try {
+      console.log("asdasd");
+      
+      const response = await fetch("http://127.0.0.1:5000/add_review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contentFeedback: contentFeedback,
+          profFeedback: professorFeedback,
+          examFeedback: examFeedback,
+          rating: rating,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert("Review submitted successfully!");
+        setContentFeedback("");
+        setProfessorFeedback("");
+        setExamFeedback("");
+        setRating(null);
+        setModalOpen(false);
+      } else {
+        alert("Failed to submit review.");
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    }
+  };
+
 
   const handleClick = (selectedChoice) => {
     setChoice(selectedChoice);
     setClick(true);
+  };
+
+  const handleRatingChange = (newRating) => {
+    setRating(newRating);
   };
 
   const handleCourses = async () => {
@@ -30,7 +84,6 @@ const Review = () => {
       }
 
       const data = await response.json();
-      console.log("Data:", data);
       setCourses(data);
     } catch (error) {
       console.error("Error fetching study plan:", error);
@@ -138,17 +191,36 @@ const Review = () => {
                     </p>
                     <div className="modal-Form">
                       <div>
-                        ด้านเนื้อหา <textarea />
+                        ด้านเนื้อหา
+                        <textarea
+                          value={contentFeedback}
+                          onChange={(e) => setContentFeedback(e.target.value)}
+                        />
                       </div>
                       <div>
-                        ด้านอาจารย์ <textarea />
+                        ด้านอาจารย์
+                        <textarea
+                          value={professorFeedback}
+                          onChange={(e) => setProfessorFeedback(e.target.value)}
+                        />
                       </div>
                       <div>
-                        ด้านการสอบ <textarea />
+                        ด้านการสอบ
+                        <textarea
+                          value={examFeedback}
+                          onChange={(e) => setExamFeedback(e.target.value)}
+                        />
                       </div>
                     </div>
+                    <div className="modal-star">
+                      Review Star
+                      <Star onRatingChange={handleRatingChange} />
+                    <div className="modal-file">
+                      <input type="file" onChange={handleFileChange}/>
+                    </div>
+                    </div>
                     <div className="modal-Submit">
-                      <button>Submit</button>
+                      <button onClick={handleSubmit}>Submit</button>
                     </div>
                   </div>
                 </div>

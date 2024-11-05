@@ -3,7 +3,8 @@ import "./Favorite.css";
 import { HiHeart } from "react-icons/hi2";
 
 const Favorite = () => {
-  const [data, setData] = useState([]);
+  const [favData, setFavData] = useState([]); 
+  const [unfavData, setUnfavData] = useState([]); 
 
   const getData = async () => {
     try {
@@ -16,10 +17,24 @@ const Favorite = () => {
       }
 
       const jsonData = await res.json();
-      setData(jsonData);
-      console.log(jsonData);
+      setFavData(jsonData); 
     } catch (error) {
       console.error("Error fetching favorite courses:", error);
+    }
+  };
+
+  const toggleFavorite = (course_no) => {
+    const courseToToggle = favData.find((item) => item.course_no === course_no);
+
+    if (courseToToggle) {
+      setFavData((prevData) => prevData.filter((item) => item.course_no !== course_no));
+      setUnfavData((prevUnfavData) => [...prevUnfavData, { ...courseToToggle, isFavorited: false }]);
+    } else {
+      const courseToReAdd = unfavData.find((item) => item.course_no === course_no);
+      if (courseToReAdd) {
+        setUnfavData((prevUnfavData) => prevUnfavData.filter((item) => item.course_no !== course_no));
+        setFavData((prevFavData) => [...prevFavData, { ...courseToReAdd, isFavorited: true }]);
+      }
     }
   };
 
@@ -30,9 +45,29 @@ const Favorite = () => {
   return (
     <div className="Fav-Container">
       <div className="Fav-Grid">
-        {data.map((item) => (
+        {favData.map((item) => (
           <div key={item.course_no} className="Fav-item">
-            <HiHeart className="Heart" />
+            <button
+              className="HeartButton"
+              onClick={() => toggleFavorite(item.course_no)}
+            >
+              <HiHeart className={`Heart favorited`} />
+            </button>
+            <h3>{item.name}</h3>
+            <p>Course No: {item.course_no}</p>
+            <p>Credits: {item.credit}</p>
+            <p>Professor: {item.prof}</p>
+          </div>
+        ))}
+        
+        {unfavData.map((item) => (
+          <div key={item.course_no} className="Fav-item">
+            <button
+              className="HeartButton"
+              onClick={() => toggleFavorite(item.course_no)}
+            >
+              <HiHeart className="unlike-heart"/>
+            </button>
             <h3>{item.name}</h3>
             <p>Course No: {item.course_no}</p>
             <p>Credits: {item.credit}</p>

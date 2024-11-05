@@ -4,11 +4,21 @@ import mysql.connector
 from mysql.connector import Error
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 users_data = []
 study_plans_data = []
 fav_data = []
+
+def connect_db():
+    db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
+
+    return db
 
 try:
     db = mysql.connector.connect(
@@ -25,6 +35,7 @@ except Error as e:
 
 def fetch_users():
     global users_data
+    print("fetch_data")
     try:
         cursor = db.cursor(dictionary=True)
         cursor.execute("SELECT username, password FROM User")
@@ -102,6 +113,69 @@ def get_study_plan():
 @app.route('/fav', methods=['GET'])
 def get_fav():
     return fav_data
+
+
+@app.route('/test', methods=['GET'])
+def test():
+    db = connect_db()
+    cursor = db.cursor()
+    cursor.execute("""
+        SELECT f.course_no, c.no, c.name, c.credit, c.prof, c.type_id
+        FROM Favorites f
+        JOIN Course c ON f.course_no = c.no
+    """)
+
+    test = cursor.fetchone()
+    db.close()
+
+    if test:
+        result = {
+            "course_no": test[0],
+            "no": test[1],
+            "name": test[2],
+            "credit": test[3],
+            "prof": test[4],
+            "type_id": test[5]
+        }
+        return jsonify(result)
+    else:
+        return "No data found", 404
+    
+@app.route('/add_review', methods=['POST'])
+def add_review():
+    data = request.json
+    content_feedback = data.get('contentFeedback')
+    prof_feedback = data.get('profFeedback')
+    exam_feedback = data.get('examFeedback')
+    rating = data.get('rating')  
+    print(rating)
+
+    db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO Review (contentFeedback, profFeedback, examFeedback, rating)
+            VALUES (%s, %s, %s, %s)
+        """, (content_feedback, prof_feedback, exam_feedback, rating))
+        
+        db.commit()
+        
+        return jsonify({"message": "Review added successfully!"}), 201
+    except Error as e:
+        db.rollback()
+        print(f"Error while adding review: {e}")
+        return jsonify({"message": "Failed to add review"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+
 
 
 if __name__ == '__main__':

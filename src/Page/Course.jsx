@@ -2,19 +2,15 @@ import React from "react";
 import "./Course.css";
 import dataScienceImg from "../asset/datascience.jpg";
 import Actuary from "../asset/Actuary.jpg";
-import Eng from "../asset/Engineer.webp";
-import Food from "../asset/Foodsci.jpg";
 import logis from "../asset/logistic.jpg";
 import teacher from "../asset/Teacher.jpeg";
 
 const Course = () => {
   const data = [
-    { name: "Data Scientist", img: dataScienceImg },
-    { name: "Actuary", img: Actuary },
-    { name: "Engineer", img: Eng },
-    { name: "Food Scientist", img: Food },
-    { name: "Logistic Officer", img: logis },
-    { name: "Teacher", img: teacher },
+    { name: `123123 Statistics\n234234 Data-Mining`, img: dataScienceImg },
+    { name: "23142 Math\n221344 Excel", img: Actuary },
+    { name: "092311 Logistic\n 231453 Stock Management", img: logis },
+    { name: "345123 Calculus 2\n 291237 Communication", img: teacher },
   ];
 
   return (

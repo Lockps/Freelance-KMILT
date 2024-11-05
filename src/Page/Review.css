@@ -166,6 +166,7 @@ tr:hover {
   border: 1px solid;
   background-color: darkred;
   color: white;
+  cursor: pointer;
 }
 
 .Review-Text {
@@ -183,4 +184,17 @@ tr:hover {
 .Review-Text:hover {
   font-size: 4vw;
   box-shadow: inset rgb(255, 229, 156) 0px 0px 100px;
+}
+
+.modal-star{
+  width: 50%;
+  height: 6vh;
+  display: flex;
+  /* background-color: darkcyan; */
+  justify-content: space-around;
+  align-items: center;
+}
+
+.model-Startxt{
+
 }

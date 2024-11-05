@@ -10,13 +10,13 @@
 
 .Course-Box {
   width: 90%;
-  height: 80%;
-  /* background-color: seagreen; */
+  height: 70%;
   border-radius: 20px;
   border: solid 1px black;
   box-shadow: inset 0px 0px 20px rgb(197, 197, 197);
   transition: all 1s;
   cursor: pointer;
+  white-space: pre-wrap;
 }
 
 .Course-Box:hover {
