@@ -4,39 +4,25 @@ import mysql.connector
 from mysql.connector import Error
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 users_data = []
 study_plans_data = []
 fav_data = []
+course_data = []
 
-def connect_db():
-    db = mysql.connector.connect(
-        host="153.92.15.23",
-        user="u245175828_KMITL",
-        password="KMITLmath1234",
-        database="u245175828_KMITL"
-    )
-
-    return db
-
-try:
-    db = mysql.connector.connect(
-        host="153.92.15.23",
-        user="u245175828_KMITL",
-        password="KMITLmath1234",
-        database="u245175828_KMITL"
-    )
-    if db.is_connected():
-        print("Database connection successful!")
-except Error as e:
-    print(f"Error connecting to the database: {e}")
 
 
 def fetch_users():
     global users_data
     print("fetch_data")
     try:
+        db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
         cursor = db.cursor(dictionary=True)
         cursor.execute("SELECT username, password FROM User")
         users_data = cursor.fetchall()
@@ -49,6 +35,12 @@ def fetch_users():
 def fetch_study_plans():
     global study_plans_data
     try:
+        db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
         cursor = db.cursor(dictionary=True)
         cursor.execute("""
             SELECT sp.id, sp.year, sp.semester, c.no, c.name, c.credit, c.prof, c.type_id
@@ -65,6 +57,12 @@ def fetch_study_plans():
 def fetch_favorites():
     global fav_data
     try:
+        db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
         cursor = db.cursor(dictionary=True)
         cursor.execute("""
             SELECT f.course_no, c.no, c.name, c.credit, c.prof, c.type_id
@@ -76,6 +74,27 @@ def fetch_favorites():
         print(f"\n\nFetched favorite courses: {fav_data}")
     except Error as e:
         print(f"Error while fetching favorite courses: {e}")
+
+def fetch_courses():
+    global course_data
+    try:
+        db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT c.no, c.name, c.credit, c.prof, c.type_id
+            FROM Course c
+        """)
+        course_data = cursor.fetchall()
+        cursor.close()
+        print(f"\n\nFetched courses: {course_data}")
+    except Error as e:
+        print(f"Error while fetching courses: {e}")
+
 
 
 @app.route('/')
@@ -104,6 +123,8 @@ def find_user():
 
 @app.route('/studyplan', methods=['GET'])
 def get_study_plan():
+    print("Starting fetch")
+    fetch_study_plans()
     if study_plans_data:
         return jsonify(study_plans_data), 200
     else:
@@ -114,10 +135,85 @@ def get_study_plan():
 def get_fav():
     return fav_data
 
+@app.route('/addFavorite', methods=['POST'])
+def addFavorite():
+    """Add a course to favorites."""
+    data = request.get_json()
+    
+    if not data or 'user_id' not in data or 'course_no' not in data:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        db = mysql.connector.connect(
+            host="153.92.15.23",
+            user="u245175828_KMITL",
+            password="KMITLmath1234",
+            database="u245175828_KMITL"
+        )
+        
+        cursor = db.cursor()
+        insert_query = """
+            INSERT INTO Favorites (user_id, course_no) 
+            VALUES (%s, %s)
+        """
+        cursor.execute(insert_query, (data['user_id'], data['course_no']))
+        db.commit()  # Commit the transaction
+
+        return jsonify({"message": "Course added to favorites"}), 201
+    except mysql.connector.Error as db_error:
+        return jsonify({"error": str(db_error)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+@app.route('/removeFavorite/<int:course_no>', methods=['DELETE'])
+def removeFavorite(course_no):
+    """Remove a course from favorites."""
+    user_id = request.args.get('user_id')  # Assuming you have a user_id to identify the user's favorites
+
+    try:
+        db = mysql.connector.connect(
+            host="153.92.15.23",
+            user="u245175828_KMITL",
+            password="KMITLmath1234",
+            database="u245175828_KMITL"
+        )
+        
+        cursor = db.cursor()
+        delete_query = """
+            DELETE FROM Favorites 
+            WHERE user_id = %s AND course_no = %s
+        """
+        cursor.execute(delete_query, (user_id, course_no))
+        db.commit()  # Commit the transaction
+
+        return jsonify({"message": "Course removed from favorites"}), 200
+    except mysql.connector.Error as db_error:
+        return jsonify({"error": str(db_error)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+
+@app.route('/courses', methods=['GET'])
+def get_courses():
+    print("asdasd")
+    fetch_courses()  
+    return jsonify(course_data)  
+
 
 @app.route('/test', methods=['GET'])
 def test():
-    db = connect_db()
+    db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
     cursor = db.cursor()
     cursor.execute("""
         SELECT f.course_no, c.no, c.name, c.credit, c.prof, c.type_id
@@ -176,6 +272,95 @@ def add_review():
         db.close()
 
 
+@app.route('/getCareer', methods=['GET'])
+def getCareer():
+    # Connect to the MySQL database
+    try:
+        db = mysql.connector.connect(
+            host="153.92.15.23",
+            user="u245175828_KMITL",
+            password="KMITLmath1234",
+            database="u245175828_KMITL"
+        )
+        
+        cursor = db.cursor(dictionary=True) 
+        cursor.execute("""
+            SELECT cc.career_id, cc.course_id, c.name AS course_name 
+            FROM Course_career cc 
+            JOIN Course c ON cc.course_id = c.no
+        """)
+        results = cursor.fetchall()  
+
+        return jsonify(results)  
+    except mysql.connector.Error as db_error:
+        return jsonify({"error": str(db_error)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        try:
+            cursor.close()
+        except:
+            pass  
+        try:
+            db.close()
+        except:
+            pass  
+
+@app.route('/add_course', methods=['POST'])
+def add_course():
+    print("Data coming")
+    data = request.json
+
+    print("Received data:", data)
+
+    course_id = data.get('courseId')
+    course_name = data.get('courseName')
+    professor = data.get('professor')
+    year = data.get('year')
+    semester = data.get('semester')
+
+    if not all([course_id, course_name, professor, year, semester]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        db = mysql.connector.connect(
+            host="153.92.15.23",
+            user="u245175828_KMITL",
+            password="KMITLmath1234",
+            database="u245175828_KMITL"
+        )
+        cursor = db.cursor()
+        
+        cursor.execute(
+            "INSERT INTO Course (no, name, prof, type_id) VALUES (%s, %s, %s, 1)",
+            (course_id, course_name, professor)
+        )
+
+        print("Successful")
+
+        cursor.execute(
+            "INSERT INTO StudyPlan (course_no, year, semester) VALUES (%s, %s, %s)",
+            (course_id, year, semester)
+        )
+        
+        db.commit()
+        return jsonify({"message": "Course added successfully!"}), 201
+
+    except mysql.connector.Error as db_error:
+        print(f"Database error: {db_error}")
+        return jsonify({"error": str(db_error)}), 500
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        try:
+            cursor.close()
+        except:
+            pass  
+        try:
+            db.close()
+        except:
+            pass  
 
 
 if __name__ == '__main__':

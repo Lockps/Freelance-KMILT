@@ -20,20 +20,22 @@ const Review = () => {
   const [professorFeedback, setProfessorFeedback] = useState("");
   const [examFeedback, setExamFeedback] = useState("");
 
+  const uniqueCourses = new Set();
+
   const [file, setfile] = useState(null)
 
-  const handleFileChange = (e) =>{
+  const handleFileChange = (e) => {
     console.log("asdasdsad");
-    
+
     setfile(e.target.files[0])
     console.log(file);
-    
+
   }
 
   const handleSubmit = async () => {
     try {
       console.log("asdasd");
-      
+
       const response = await fetch("http://127.0.0.1:5000/add_review", {
         method: "POST",
         headers: {
@@ -142,7 +144,7 @@ const Review = () => {
                   onClick={() => {
                     setClick(false);
                     setChoice("");
-                  }}
+                  }}G
                 />
                 {courseTypeMap[getTypeId(choice)]}
               </div>
@@ -153,13 +155,21 @@ const Review = () => {
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Credits</th>
+                    <th>Year</th>
                     <th>Professor</th>
                   </tr>
                 </thead>
                 <tbody>
                   {courses
-                    .filter((course) => course.type_id === getTypeId(choice))
+                    .filter((course) => course.type_id === getTypeId(choice)) 
+                    .filter((course) => {
+                      if (!uniqueCourses.has(course.id)) {
+                        console.log("unique");
+                        uniqueCourses.add(course.id); 
+                        return true; 
+                      }
+                      return false;
+                    })
                     .map((course) => (
                       <tr
                         key={course.id}
@@ -167,7 +177,7 @@ const Review = () => {
                       >
                         <td>{course.id}</td>
                         <td>{course.name}</td>
-                        <td>{course.credit}</td>
+                        <td>{course.year}</td>
                         <td>{course.prof}</td>
                       </tr>
                     ))}
@@ -215,9 +225,9 @@ const Review = () => {
                     <div className="modal-star">
                       Review Star
                       <Star onRatingChange={handleRatingChange} />
-                    <div className="modal-file">
-                      <input type="file" onChange={handleFileChange}/>
-                    </div>
+                      <div className="modal-file">
+                        <input type="file" onChange={handleFileChange} />
+                      </div>
                     </div>
                     <div className="modal-Submit">
                       <button onClick={handleSubmit}>Submit</button>
