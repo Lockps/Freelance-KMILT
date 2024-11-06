@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./Review.css";
-import { BiArrowBack } from "react-icons/bi";
+import { BiArrowBack, BiBook } from "react-icons/bi";
 import a from "../asset/a.jpg";
 import b from "../asset/b.png";
 import c from "../asset/c.jpg";
 import d from "../asset/d.jpg";
 import Star from "../Components/Star";
+import { CgComment } from "react-icons/cg";
+import Comment from "./Comment";
+import { BsBack } from "react-icons/bs";
+import { IoArrowBack } from "react-icons/io5";
 
 const Review = () => {
   const [isClick, setClick] = useState(false);
@@ -20,6 +24,39 @@ const Review = () => {
   const [professorFeedback, setProfessorFeedback] = useState("");
   const [examFeedback, setExamFeedback] = useState("");
 
+  const [isShowComment, setShowComment] = useState(false)
+  const [comments, setcomments] = useState([])
+
+  const [isLoadComment, setLoadComment] = useState(false)
+
+
+
+  const showComment = async (course) => {
+    try {
+
+      setLoadComment(true)
+      const response = await fetch("http://127.0.0.1:5000/comment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: course.no }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setcomments(data);
+        setShowComment(true)
+        setLoadComment(false)
+      } else {
+        alert("Failed to fetch comments.");
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
   const uniqueCourses = new Set();
 
   const [file, setfile] = useState(null)
@@ -33,8 +70,13 @@ const Review = () => {
   }
 
   const handleSubmit = async () => {
+    if (!selectedCourse) {
+      alert("Please select a course before submitting.");
+      return;
+    }
+
     try {
-      console.log("asdasd");
+      console.log(selectedCourse);
 
       const response = await fetch("http://127.0.0.1:5000/add_review", {
         method: "POST",
@@ -42,6 +84,7 @@ const Review = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          course_id: selectedCourse.no,
           contentFeedback: contentFeedback,
           profFeedback: professorFeedback,
           examFeedback: examFeedback,
@@ -130,11 +173,63 @@ const Review = () => {
     setSelectedCourse(null);
   };
 
+  if (isLoadComment) {
+    return <div className="Loading">
+      <ul>
+        <li />
+        <li />
+        <li />
+      </ul>
+    </div>
+  }
+
+  if (isShowComment) {
+    return (
+      <div className="Review-CommentContainer">
+        <div className="Review-Back">
+          <IoArrowBack onClick={() => {
+            setShowComment(false)
+            setModalOpen(false)
+          }} />
+          <h1>{comments.length > 0 ? "COURSE ID: " + comments[0].course_id : "Doesn't have any review yet"}</h1>
+        </div>
+        <div className="Review-Grid">
+          {comments.length > 0 ? (
+            comments.map((comment, index) => (
+              <div key={index} className="Review-item">
+
+                <h3>{comment.title}</h3>
+
+                <p><strong>Content Feedback:</strong> {comment.contentFeedback}</p>
+                <p><strong>Professor Feedback:</strong> {comment.profFeedback}</p>
+                <p><strong>Exam Feedback:</strong> {comment.examFeedback}</p>
+
+                {/* Rating */}
+                <div className="rating">Rating: {comment.rating}</div>
+              </div>
+            ))
+          ) : (
+            <div className="Loading">
+              <div className="spinner"></div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+
+  }
+
   return (
     <div className="Review-Container">
       {isClick ? (
         isLoad ? (
-          <h1>Loading...</h1>
+          <div className="Loading">
+            <ul>
+              <li />
+              <li />
+              <li />
+            </ul>
+          </div>
         ) : (
           <div className="Review-table">
             <div className="Review-Arrow">
@@ -144,7 +239,7 @@ const Review = () => {
                   onClick={() => {
                     setClick(false);
                     setChoice("");
-                  }}G
+                  }} G
                 />
                 {courseTypeMap[getTypeId(choice)]}
               </div>
@@ -157,16 +252,16 @@ const Review = () => {
                     <th>Name</th>
                     <th>Year</th>
                     <th>Professor</th>
+                    <th className="th-comment">comment</th>
                   </tr>
                 </thead>
                 <tbody>
                   {courses
-                    .filter((course) => course.type_id === getTypeId(choice)) 
+                    .filter((course) => course.type_id === getTypeId(choice))
                     .filter((course) => {
                       if (!uniqueCourses.has(course.id)) {
-                        console.log("unique");
-                        uniqueCourses.add(course.id); 
-                        return true; 
+                        uniqueCourses.add(course.id);
+                        return true;
                       }
                       return false;
                     })
@@ -179,6 +274,9 @@ const Review = () => {
                         <td>{course.name}</td>
                         <td>{course.year}</td>
                         <td>{course.prof}</td>
+                        <td className="th-comment">
+                          <CgComment onClick={() => showComment(course)} />
+                        </td>
                       </tr>
                     ))}
                 </tbody>

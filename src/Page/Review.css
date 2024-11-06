@@ -195,6 +195,136 @@ tr:hover {
   align-items: center;
 }
 
-.model-Startxt{
 
+th.th-comment td.th-comment{
+  background-color: salmon;
+  width: 20px;
+  z-index: 100000;
+}
+
+/* Container for the entire review section */
+.Review-CommentContainer {
+  width: 100%;
+  height: auto;
+  padding: 20px;
+  background-color: #f3f4f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.Review-Back{
+  /* background-color: saddlebrown; */
+  width: 90%;
+  color: gray;
+  margin-bottom: 2%;
+  cursor: pointer;
+}
+
+
+/* Grid container for the reviews */
+.Review-Grid {
+  width: 80%;
+  height: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns for grid */
+  gap: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for each review card */
+.Review-item {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+/* Hover effect for review cards */
+.Review-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Rating section */
+.Review-item .rating {
+  font-size: 1em;
+  color: #f39c12; /* Gold color for the rating */
+  margin: 8px 0;
+}
+
+/* Heart icon for like/unlike */
+.Heart {
+  color: red;
+  font-size: 1.5em;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.unlike-heart {
+  color: #6b7280;
+  font-size: 1.5em;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+/* Title of the review */
+.Review-item h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+/* Description and feedback sections */
+.Review-item p {
+  font-size: 0.9em;
+  color: #6b7280;
+  margin: 4px 0;
+}
+
+/* Loading spinner */
+.Loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.Review-Back h1{
+  cursor:auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 2%;
+  color: #111827;
 }

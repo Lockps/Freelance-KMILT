@@ -240,6 +240,7 @@ def test():
 @app.route('/add_review', methods=['POST'])
 def add_review():
     data = request.json
+    course_id = data.get('course_id')  
     content_feedback = data.get('contentFeedback')
     prof_feedback = data.get('profFeedback')
     exam_feedback = data.get('examFeedback')
@@ -256,9 +257,9 @@ def add_review():
 
     try:
         cursor.execute("""
-            INSERT INTO Review (contentFeedback, profFeedback, examFeedback, rating)
-            VALUES (%s, %s, %s, %s)
-        """, (content_feedback, prof_feedback, exam_feedback, rating))
+            INSERT INTO Review (course_id, contentFeedback, profFeedback, examFeedback, rating)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (course_id, content_feedback, prof_feedback, exam_feedback, rating))
         
         db.commit()
         
@@ -274,7 +275,6 @@ def add_review():
 
 @app.route('/getCareer', methods=['GET'])
 def getCareer():
-    # Connect to the MySQL database
     try:
         db = mysql.connector.connect(
             host="153.92.15.23",
@@ -361,6 +361,34 @@ def add_course():
             db.close()
         except:
             pass  
+
+
+@app.route('/comment', methods=["POST"])
+def getComment():
+    data = request.json
+    cid = data.get('id')
+    
+    db = mysql.connector.connect(
+        host="153.92.15.23",
+        user="u245175828_KMITL",
+        password="KMITLmath1234",
+        database="u245175828_KMITL"
+    )
+    cursor = db.cursor(dictionary=True)
+
+    try:
+        # Use parameterized query to prevent SQL injection
+        cursor.execute("SELECT * FROM Review WHERE course_id = %s", (cid,))
+        comments = cursor.fetchall()
+
+        return jsonify(comments), 200  # Return comments as JSON with status code 200
+    except Exception as e:
+        print("Error fetching comments:", e)
+        return jsonify({"error": "Failed to fetch comments"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
 
 
 if __name__ == '__main__':
